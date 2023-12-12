@@ -30,6 +30,10 @@ public class Metering {
         this.sensor = sensor;
     }
 
+    public Metering() {
+
+    }
+
     public int getId() {
         return id;
     }

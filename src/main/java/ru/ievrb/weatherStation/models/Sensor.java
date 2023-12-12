@@ -22,6 +22,10 @@ public class Sensor {
         this.name = name;
     }
 
+    public Sensor() {
+
+    }
+
     public int getId() {
         return id;
     }
