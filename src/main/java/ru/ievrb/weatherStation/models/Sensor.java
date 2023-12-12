@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="seensor")
+@Table(name="sensor")
 public class Sensor {
 
     @Id
@@ -15,8 +15,12 @@ public class Sensor {
     @Column(name="name")
     private String name;
 
+    @Column(name="sensor_token")
+    private String sensorToken;
+
     @OneToMany(mappedBy = "sensor")
     private List<Metering> meterings;
+
 
     public Sensor(String name) {
         this.name = name;
@@ -24,6 +28,14 @@ public class Sensor {
 
     public Sensor() {
 
+    }
+
+    public String getSensorToken() {
+        return sensorToken;
+    }
+
+    public void setSensorToken(String sensorToken) {
+        this.sensorToken = sensorToken;
     }
 
     public int getId() {
