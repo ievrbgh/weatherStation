@@ -6,4 +6,6 @@ import ru.ievrb.weatherStation.models.Sensor;
 
 @Repository
 public interface SensorRepository extends JpaRepository<Sensor, Integer> {
+
+    Sensor findByName(String name);
 }

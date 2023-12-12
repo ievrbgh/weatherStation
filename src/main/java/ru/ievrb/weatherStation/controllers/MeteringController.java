@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.ievrb.weatherStation.dto.MeteringDTO;
 import ru.ievrb.weatherStation.models.Metering;
 import ru.ievrb.weatherStation.services.MeteringService;
+import ru.ievrb.weatherStation.utill.exceptions.InvalidTokenException;
 import ru.ievrb.weatherStation.utill.exceptions.MeteringErrorResponce;
 import ru.ievrb.weatherStation.utill.exceptions.MeteringNotCreatedException;
 import ru.ievrb.weatherStation.utill.exceptions.MeteringNotFoundException;
@@ -43,6 +44,11 @@ public class MeteringController {
         return mm.map(ms.getById(id), MeteringDTO.class);
     }
 
+    @GetMapping("/rainyDaysCount")
+    public ResponseEntity<Integer> getRainyDaysCount(){
+        return ResponseEntity.ok(ms.getRainyDaysCount());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid MeteringDTO meteringDTO, BindingResult bindingResult) {
 
@@ -50,7 +56,8 @@ public class MeteringController {
             throw new MeteringNotCreatedException(getErrorMessageString(bindingResult));
         }
 
-        ms.save(convertToMetering(meteringDTO));
+        ms.checkSensorToken(meteringDTO);
+        ms.save(meteringDTO);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -59,9 +66,7 @@ public class MeteringController {
         return mm.map(metering, MeteringDTO.class);
     }
 
-    private Metering convertToMetering(MeteringDTO meteringDTO){
-        return mm.map(meteringDTO, Metering.class);
-    }
+
 
     @ExceptionHandler
     private ResponseEntity<MeteringErrorResponce> handleException(MeteringNotFoundException e){
@@ -70,6 +75,15 @@ public class MeteringController {
                 System.currentTimeMillis()
         );
         return new ResponseEntity<>(mer, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MeteringErrorResponce> handleException(InvalidTokenException e){
+        MeteringErrorResponce mer = new MeteringErrorResponce(
+                "invalid token",
+                System.currentTimeMillis()
+        );
+        return new ResponseEntity<>(mer, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
